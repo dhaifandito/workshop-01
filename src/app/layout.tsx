@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(fontRoboto.variable)}>
-        <div>
+        <div className="bg-gray-100 min-h-screen">
           <Header />
           {children}
         </div>

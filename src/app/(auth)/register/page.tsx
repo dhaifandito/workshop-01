@@ -8,17 +8,17 @@ export default function Register() {
   <h1 className="text-3xl my-7">Register</h1>
   <div className="grid w-full max-w-sm items-center gap-1.5 my-5">
     <Label htmlFor="name">Name</Label>
-    <Input type="name" id="name" placeholder="Name" />
+    <Input type="name" id="name" placeholder="Name" className="bg-white"/>
   </div>
   <div className="grid w-full max-w-sm items-center gap-1.5 my-5">
     <Label htmlFor="email">Email</Label>
-    <Input type="email" id="email" placeholder="Email" />
+    <Input type="email" id="email" placeholder="Email" className="bg-white"/>
   </div>
   <div className="grid w-full max-w-sm items-center gap-1.5 my-5">
     <Label htmlFor="password">Password</Label>
-    <Input type="password" id="password" placeholder="Password" />
+    <Input type="password" id="password" placeholder="Password" className="bg-white"/>
   </div>
   <div></div>
-  <Button className="w-40 my-5">Register</Button>
+  <Button className="w-40 my-5" variant="warning">Register</Button>
   </div>;;
 }
