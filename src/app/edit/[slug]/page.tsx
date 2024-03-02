@@ -6,8 +6,9 @@ import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
-import { useForm } from "react-hook-form";
+import { useForm, Controller, SubmitHandler } from "react-hook-form"
 import { z } from "zod";
+import { Label } from "@/components/ui/label";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +37,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EventListProps } from "@/lib/utils/api-request";
+import { useEditEventMutation } from "@/lib/hooks/useEditMutation";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -48,7 +51,22 @@ const formSchema = z.object({
   category: z.string(),
 });
 
+export type EventListPropsEdit = {
+  id: string | null;
+  name: string | null;
+  host: string | null;
+  description: string | null;
+  time: any | null;
+  place: string | null;
+  filled_quota: number | null;
+  quota: number | null;
+  category: string | null;
+  status: string | null;
+};
+
 export default function Page({ params }: { params: { slug: string } }) {
+  const editEventMutation = useEditEventMutation();
+
   const searchParams = useSearchParams();
   const eventName = searchParams.get("name");
   const eventHost = searchParams.get("host");
@@ -57,10 +75,14 @@ export default function Page({ params }: { params: { slug: string } }) {
   const eventQuota = Number(searchParams.get("quota"))
   const eventCategory = searchParams.get("category")
   const eventTime = searchParams.get("time")
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const eventStatus = searchParams.get("status")
+  
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
+      id: "",
+      host: searchParams.get("host"),
+      filled_quota: Number(searchParams.get("filled_quota")),
+      status: `${eventStatus}`,
       name: `${eventName}`,
       description: `${eventDescription}`,
       place: `${eventPlace}`,
@@ -68,11 +90,39 @@ export default function Page({ params }: { params: { slug: string } }) {
       category: `${eventCategory}`,
       time: new Date(`${eventTime}`)
     },
-  });
+  })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const onSubmit: SubmitHandler<EventListPropsEdit> = async (data) => {
+    console.log(data)
+    
+ await editEventMutation.mutateAsync(
+       data
+         ,
+         {
+           onSuccess: () => {
+                
+             reset({
+               id: "",
+               host: searchParams.get("host"),
+               filled_quota: Number(searchParams.get("filled_quota")),
+               status: `${eventStatus}`,
+               name: `${eventName}`,
+               description: `${eventDescription}`,
+               place: `${eventPlace}`,
+               quota:  eventQuota,
+               category: `${eventCategory}`,
+               time: new Date(`${eventTime}`)
+             });
+             alert("Party Created successfully");
+           },
+           onError: (error) => {
+                
+             console.error("Error create party:", error);
+           },
+         }
+       );
   }
+
 
   return (
     <div>
@@ -81,132 +131,131 @@ export default function Page({ params }: { params: { slug: string } }) {
         <p>By {eventHost}</p>
       </div>
       <div className="px-96 mt-12 pb-12">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              // control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Party Name</FormLabel>
-                  <FormControl className="bg-white">
-                    <Input placeholder="party name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              // control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl className="bg-white">
-                    <Input placeholder="description" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="time"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Time</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              // control={form.control}
-              name="place"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Place</FormLabel>
-                  <FormControl className="bg-white">
-                    <Input placeholder="party place" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              // control={form.control}
-              name="quota"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quota</FormLabel>
-                  <FormControl className="bg-white">
-                    <Input placeholder="quota" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <div className="my-6">
+              <Label>Party Name</Label>
+              <Input className="bg-white" {...field} />
+            </div>
+          )}
+        />
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <div className="my-6">
+              <Label>Description</Label>
+              <Input className="bg-white" {...field} />
+            </div>
+          )}
+        />
+        <Controller
+          name="place"
+          control={control}
+          render={({ field }) => (
+            <div className="my-6">
+              <Label>Place</Label>
+              <Input className="bg-white" {...field} />
+            </div>
+          )}
+        />
+        <Controller
+          name="time"
+          control={control}
+          render={({ field }) => (
+            <div className="my-6 flex flex-col">
+              <Label>Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[240px] pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground"
+                    )}
                   >
-                    <FormControl className="bg-white">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a catefory for your party" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="music">music</SelectItem>
-                      <SelectItem value="comedy">comedy</SelectItem>
-                      <SelectItem value="culinary">culinary</SelectItem>
-                      <SelectItem value="sport">sport</SelectItem>
-                      <SelectItem value="education">education</SelectItem>
-                      <SelectItem value="other">other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button variant="warning">Submit</Button>
-          </form>
-        </Form>
+                    {field.value ? (
+                      format(field.value, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date < new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+        />
+        <Controller
+          name="quota"
+          control={control}
+          render={({ field }) => (
+            <div className="my-6">
+              <Label>Quota</Label>
+              <Input type="number" className="bg-white" {...field} />
+            </div>
+          )}
+        />
+        <Controller
+          name="category"
+          control={control}
+          render={({ field }) => (
+            <div className="my-6">
+              <Label>Category</Label>
+              <Select onValueChange={field.onChange} defaultValue={field.value} >
+                <SelectTrigger className="w-[280px] bg-white">
+                  <SelectValue  placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="music">music</SelectItem>
+                  <SelectItem value="comedy">comedy</SelectItem>
+                  <SelectItem value="culinary">culinary</SelectItem>
+                  <SelectItem value="sport">sport</SelectItem>
+                  <SelectItem value="education">education</SelectItem>
+                  <SelectItem value="other">other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        />
+         <Controller
+          name="status"
+          control={control}
+          render={({ field }) => (
+            <div className="my-6">
+              <Label>Status</Label>
+              <Select onValueChange={field.onChange} defaultValue={field.value} >
+                <SelectTrigger className="w-[280px] bg-white">
+                  <SelectValue  placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="soon">soon</SelectItem>
+                  <SelectItem value="canceled">canceled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        />
+        <div>
+          <Button variant="warning" type="submit">
+            Edit
+          </Button>
+        </div>
+      </form>
       </div>
     </div>
   );

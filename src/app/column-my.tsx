@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import ActionEvent from "@/lib/components/ActionEvent";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -112,57 +113,28 @@ export const columnsMy: ColumnDef<EventMy>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const eventId = row.original.id;
-      const eventName = row.original.name;
-      const eventHost = row.original.host;
-      const eventDescription = row.original.description;
-      const eventQuota = row.original.quota;
-      const eventTime = row.original.time;
-      const eventPlace = row.original.place;
-      const eventCategory = row.original.category;
-      return (
-        <div className="text-blue-500 hover:text-blue-800">
-          <Button variant="warning">
-            <Link
-              href={{
-                pathname: `/edit/${eventId}`,
-                query: {
-                  name: eventName,
-                  host: eventHost,
-                  description: eventDescription,
-                  quota: eventQuota,
-                  time: eventTime,
-                  place: eventPlace,
-                  category: eventCategory,
-                },
-              }}
-            >
-              Edit
-            </Link>
-          </Button>
-        </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const statusCol = row.original.status;
       const eventName = row.original.name;
       return (
         <div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="erase">Delete</Button>
+              <Button variant="warning">Action</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Are you sure to delete {eventName}?</DialogTitle>
+                <DialogTitle>Choose your action for {eventName}?</DialogTitle>
                 <DialogDescription>
-                  <div className="flex justify-center items-center py-5 flex-col text-lg">
-                    <p className="my-5">Yes, I'm sure to delete <span className="text-yellow-500 font-bold">{eventName}</span></p>
-                    <Button variant="destructive">Delete</Button>
-                  </div>
+                  <ActionEvent
+                    eventId={row.original.id}
+                    eventName={row.original.name}
+                    eventHost={row.original.host}
+                    eventDescription={row.original.description}
+                    eventQuota={row.original.quota}
+                    eventTime={row.original.time}
+                    eventPlace={row.original.place}
+                    eventCategory={row.original.category}
+                    eventStatus={row.original.status}
+                  />
                 </DialogDescription>
               </DialogHeader>
             </DialogContent>

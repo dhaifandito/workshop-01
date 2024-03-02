@@ -6,6 +6,7 @@ import "./globals.css";
 import Header from "@/lib/components/Header";
 import { fontRoboto } from "@/lib/styles/fonts";
 import { cn } from "@/lib/utils";
+import ReactQueryProvider from "@/providers/reactQueryProviders";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -23,8 +24,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn(fontRoboto.variable)}>
         <div className="bg-gray-100 min-h-screen">
+          <ReactQueryProvider>
           <Header />
           {children}
+          </ReactQueryProvider>
         </div>
       </body>
     </html>
