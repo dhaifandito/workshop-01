@@ -25,8 +25,8 @@ export default function RootLayout({
       <body className={cn(fontRoboto.variable)}>
         <div className="bg-gray-100 min-h-screen">
           <ReactQueryProvider>
-          <Header />
-          {children}
+            <Header />
+            {children}
           </ReactQueryProvider>
         </div>
       </body>

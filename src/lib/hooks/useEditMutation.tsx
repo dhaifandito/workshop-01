@@ -1,9 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { EventListProps } from '../utils/api-request';
-import { editEvent } from '../utils/api-request';
+import { useMutation } from "@tanstack/react-query";
+
+import { editEvent } from "../utils/api-request";
 
 export function useEditEventMutation() {
-  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: editEvent,
@@ -11,7 +10,7 @@ export function useEditEventMutation() {
       console.log("success");
     },
     onError: (error) => {
-      console.error('Error create new event:', error);
+      console.error("Error create new event:", error);
     },
   });
 }

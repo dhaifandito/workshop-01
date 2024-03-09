@@ -1,24 +1,57 @@
+import { redirect, useRouter } from "next/navigation";
 import React from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
-export default function Register() {
-  return <div className="font-robotomono flex justify-center items-center m-10 flex-col">
-  <h1 className="text-3xl my-7">Register</h1>
-  <div className="grid w-full max-w-sm items-center gap-1.5 my-5">
-    <Label htmlFor="name">Name</Label>
-    <Input type="name" id="name" placeholder="Name" className="bg-white"/>
-  </div>
-  <div className="grid w-full max-w-sm items-center gap-1.5 my-5">
-    <Label htmlFor="email">Email</Label>
-    <Input type="email" id="email" placeholder="Email" className="bg-white"/>
-  </div>
-  <div className="grid w-full max-w-sm items-center gap-1.5 my-5">
-    <Label htmlFor="password">Password</Label>
-    <Input type="password" id="password" placeholder="Password" className="bg-white"/>
-  </div>
-  <div></div>
-  <Button className="w-40 my-5" variant="warning">Register</Button>
-  </div>;;
-}
+import { Toaster } from "@/components/ui/toaster";
+import { createClient } from "@/lib/supabase/server";
+
+import { SubmitButton } from "./button-submit";
+
+const Register = () => {
+  const signUp = async (formData: FormData) => {
+    "use server";
+
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const username = formData.get("username") as string;
+    const supabase = createClient();
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+        },
+      },
+    });
+    if (error) {
+      console.log("error");
+    }
+    redirect("/login");
+  };
+
+  return (
+    <div className="flex justify-center items-center flex-col m-12">
+      <Toaster />
+      <form>
+        <div>
+          <p>email</p>
+          <input name="email" required />
+        </div>
+        <div>
+          <p>password</p>
+          <input name="password" required />
+        </div>
+        <div>
+          <p>username</p>
+          <input name="username" required />
+        </div>
+        <SubmitButton formAction={signUp} pendingText="Signing up...">
+          Submit
+        </SubmitButton>
+      </form>
+    </div>
+  );
+};
+
+export default Register;

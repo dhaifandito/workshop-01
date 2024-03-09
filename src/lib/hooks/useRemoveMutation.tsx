@@ -1,8 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { removeEvent } from '../utils/api-request';
+import { useMutation} from "@tanstack/react-query";
+
+import { removeEvent } from "../utils/api-request";
 
 export function useRemoveEventMutation() {
-  const queryClient = useQueryClient();
+ 
 
   return useMutation({
     mutationFn: removeEvent,
@@ -10,7 +11,7 @@ export function useRemoveEventMutation() {
       console.log("success");
     },
     onError: (error) => {
-      console.error('Error create new event:', error);
+      console.error("Error create new event:", error);
     },
   });
 }

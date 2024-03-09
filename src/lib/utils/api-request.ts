@@ -1,6 +1,3 @@
-// @ts-ignore
-import SteinStore from 'stein-js-client';
-
 export type EventListPropsEdit = {
   id: string | null;
   name: string | null;
@@ -28,63 +25,68 @@ export type EventListProps = {
 };
 
 const getEventApi =
-  'https://api.steinhq.com/v1/storages/65df42124a64236312092cf1/event';
+  "https://api.steinhq.com/v1/storages/65df42124a64236312092cf1/event";
+  
 
 export async function getEventList() {
   const res = await fetch(getEventApi);
-  const event = (await res.json()) as EventListProps[];
-  return event;
+  return (await res.json()) as EventListProps[];
 }
 
-export async function addEvent(newEvent: EventListProps): Promise<EventListProps> {
-  const eventToAdd = { ...newEvent }; 
+export async function addEvent(
+  newEvent: EventListProps,
+): Promise<EventListProps> {
+  const eventToAdd = { ...newEvent };
 
   const response = await fetch(getEventApi, {
-    method: 'POST', // Adjust based on Stein's requirements for adding new entries
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify([eventToAdd]), // Adjust based on Stein's API expectations
+    body: JSON.stringify([eventToAdd]),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create new event');
+    throw new Error("Failed to create new event");
   }
 
-  return await response.json();
+  return response.json();
 }
 
 export async function removeEvent(names: string): Promise<void> {
-  const nameEvent = names
+  const nameEvent = names;
   const response = await fetch(`${getEventApi}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({condition: {name: nameEvent}}), 
+    body: JSON.stringify({ condition: { name: nameEvent } }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to delete event');
+    throw new Error("Failed to delete event");
   }
 }
 
-export async function editEvent(newEvent: EventListPropsEdit): Promise<EventListPropsEdit> {
-  const eventToEdit = { ...newEvent }; 
+export async function editEvent(
+  newEvent: EventListPropsEdit,
+): Promise<EventListPropsEdit> {
+  const eventToEdit = { ...newEvent };
 
-  
   const response = await fetch(getEventApi, {
-    method: 'PUT', // Adjust based on Stein's requirements for adding new entries
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({condition: {name: eventToEdit.name}, set: [eventToEdit]}), // Adjust based on Stein's API expectations
+    body: JSON.stringify({
+      condition: { name: eventToEdit.name },
+      set: [eventToEdit],
+    }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to edit event');
+    throw new Error("Failed to edit event");
   }
 
-  return await response.json();
+  return response.json();
 }
-

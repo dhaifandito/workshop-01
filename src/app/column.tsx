@@ -1,7 +1,10 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import React from "react";
+import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,7 +14,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Link from "next/link";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -47,7 +49,7 @@ export const columns: ColumnDef<Event>[] = [
           Party
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -61,7 +63,7 @@ export const columns: ColumnDef<Event>[] = [
           Host
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -78,7 +80,9 @@ export const columns: ColumnDef<Event>[] = [
       const filledQuota = row.original.filled_quota;
       const allQuota = row.original.quota;
       return (
-        <div className={filledQuota >= allQuota ? "text-red-500" : "text-black"}>
+        <div
+          className={filledQuota >= allQuota ? "text-red-500" : "text-black"}
+        >
           {filledQuota}/{allQuota}
         </div>
       );
@@ -108,7 +112,6 @@ export const columns: ColumnDef<Event>[] = [
     },
   },
   {
-
     id: "actions",
     cell: ({ row }) => {
       const statusCol = row.original.status;
@@ -117,55 +120,56 @@ export const columns: ColumnDef<Event>[] = [
       const eventTime = row.original.time;
       const eventPlace = row.original.place;
 
-      if(row.original.host === 'Laugh Factory'){
+      if (row.original.host === "Laugh Factory") {
         return (
-          <Button variant="ghost" className="text-green-500"> 
+          <Button variant="ghost" className="text-green-500">
             Host
           </Button>
-        )
-      } else
-      if(row.original.filled_quota >= row.original.quota || row.original.status !== 'soon'){
+        );
+      }
+      if (
+        row.original.filled_quota >= row.original.quota ||
+        row.original.status !== "soon"
+      ) {
         return (
           <div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button disabled>
-                Join
-                </Button>
+                <Button disabled>Join</Button>
               </DialogTrigger>
             </Dialog>
           </div>
         );
-      }else{
-        return (
-          <div>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="warning">
-                Join
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Let's party on {eventName}?</DialogTitle>
-                  <DialogDescription>
-                    <div className="flex flex-col justify-center py-5">
-                      <div className="mb-12">
-                      <h1 className="font-bold text-2xl text-yellow-500">{eventName}</h1>
+      }
+      return (
+        <div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="warning">Join</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Let's party on {eventName}?</DialogTitle>
+                <DialogDescription>
+                  <div className="flex flex-col justify-center py-5">
+                    <div className="mb-12">
+                      <h1 className="font-bold text-2xl text-yellow-500">
+                        {eventName}
+                      </h1>
                       <p className="font-bold text-xl">{eventDescription}</p>
                       <div className="flex justify-between">
                         <p>{eventPlace}</p>
                         <p>{eventTime}</p>
                       </div>
-                      </div>
-                      <Button variant="warning">Join</Button>
                     </div>
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-          </div>
-        );}
+                    <Button variant="warning">Join</Button>
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
+      );
     },
-  }
+  },
 ];

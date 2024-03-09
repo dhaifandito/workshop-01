@@ -1,8 +1,13 @@
 {
   "rules":{
     "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
-    "line-comment-position": ["error", { "position": "above" }],
-    "max-len": ["error", { "code": 80 }]
+    // "line-comment-position": ["error", { "position": "above" }],
+    "react/no-unescaped-entities": "off",
+    "@next/next/no-page-custom-font": "off",
+    // "max-len": ["error", { "code": 80 }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-console": "off"
+    
   },
   "extends": ["sznm/react", "plugin:@next/next/recommended"]
 }

@@ -1,5 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { addEvent } from '../utils/api-request';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { addEvent } from "../utils/api-request";
 
 export function useAddEventMutation() {
   const queryClient = useQueryClient();
@@ -7,10 +8,10 @@ export function useAddEventMutation() {
   return useMutation({
     mutationFn: addEvent,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['eventData'] });
+      queryClient.invalidateQueries({ queryKey: ["eventData"] });
     },
     onError: (error) => {
-      console.error('Error create new event:', error);
+      console.error("Error create new event:", error);
     },
   });
 }

@@ -1,9 +1,19 @@
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { format } from "date-fns";
 import React from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+
+import { useAddEventMutation } from "../hooks/useAddMutationEvent";
+import type { EventListProps } from "../utils/api-request";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EventListProps } from "../utils/api-request";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -12,26 +22,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-
-import { CalendarIcon } from "@radix-ui/react-icons";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-import { useAddEventMutation } from "../hooks/useAddMutationEvent";
-import { format } from "date-fns";
-
-
 
 const CreateEvent = () => {
   const addEventMutation = useAddEventMutation();
 
   const newId = Math.random().toString(36).substring(7);
-  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       id: "",
       name: "",
@@ -51,7 +52,7 @@ const CreateEvent = () => {
       {
         ...data,
         quota: Number(data.quota),
-        id: newId
+        id: newId,
       },
       {
         onSuccess: () => {
@@ -74,7 +75,7 @@ const CreateEvent = () => {
           // Handle error case as needed
           console.error("Error create party:", error);
         },
-      }
+      },
     );
     // Additional success/error handling can be done here
   };
@@ -121,10 +122,10 @@ const CreateEvent = () => {
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant={"outline"}
+                    variant="outline"
                     className={cn(
                       "w-[240px] pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground"
+                      !field.value && "text-muted-foreground",
                     )}
                   >
                     {field.value ? (
