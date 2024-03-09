@@ -22,6 +22,26 @@ import { useToast } from "@/components/ui/use-toast";
 export default function Header() {
   const supabase = createClient();
 
+  type userObject = { [key: string]: any };
+  const [user, setUser] = React.useState<userObject>({});
+  React.useEffect(() => {
+    const getUser = async () => {
+      try {
+        const {
+          data: { user }, error
+        } = await supabase.auth.getUser();
+        if (error) throw error;
+        if (user) {
+          setUser(user);
+        }
+      } catch (error) {
+        console.log("error: ", error);
+      }
+    };
+
+    getUser();
+  }, []);
+
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const { toast } = useToast();
@@ -47,7 +67,7 @@ export default function Header() {
       <div className="mx-10">
         <Link href="/">PartyCipate.</Link>
       </div>
-       
+      {user.aud === "authenticated" ? 
         <div className="mx-10 flex justify-end items-center">
           <Link href="/user/Laugh%20Factory" className="px-5">
             User
@@ -76,7 +96,7 @@ export default function Header() {
 
           <Toaster />
         </div>
-     
+     :
         <div>
           <Link href="/login" className="px-5">
             Login
@@ -84,7 +104,7 @@ export default function Header() {
 
           <Toaster />
         </div>
-      
+}
     </div>
   );
 }
