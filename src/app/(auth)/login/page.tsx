@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { createClient } from "@/lib/supabase/client";
-import { useLogin } from "@/lib/context/useLogin";
 
 const formSchema = z.object({
   email: z.string().min(2).max(50),
@@ -31,7 +30,6 @@ const formSchema = z.object({
 export default function Login() {
   const { toast } = useToast();
   const router = useRouter();
-  const {isLogin, setisLogin} = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,6 +44,8 @@ export default function Login() {
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
+  const [errorMessage, setErrorMessage] = React.useState('');
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
@@ -57,14 +57,15 @@ export default function Login() {
 
     setLoading(false);
     if (error) {
-      console.log(error);
+      console.error('error', error.message);
+      setErrorMessage('Invalid login credentials');
     } else {
       toast({
         description: "You are logged in",
       });
-      router.push("/");
     }
   };
+
   return (
    <div className="col-span-2 flex justify-center items-center flex-col min-h-screen">
       <h1 className="text-2xl pb-7">Login</h1>
@@ -106,6 +107,7 @@ export default function Login() {
             )}
           />
           <Button type="submit">Submit</Button>
+          <p>{errorMessage}</p>
         </form>
       </Form>
       <Link href="/register" className="px-5 pt-7">
