@@ -1,26 +1,26 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { useAddEventMutation } from "@/lib/hooks/useAddMutationEvent";
 import { createClient } from "@/lib/supabase/client";
+import { useLogin } from "@/lib/context/useLogin";
+import Protect from "@/lib/hooks/Protected";
 
-import { columns } from "./column";
-import { columnsMy } from "./column-my";
-import { DataTable } from "./data-table";
-import { DataTableMy } from "./data-table-my";
-
-export default function EventPage() {
+const HomePage = () => {
   const supabase = createClient();
+
   type userObject = { [key: string]: any };
   const [user, setUser] = React.useState<userObject>({});
+
+  //get user via supabase
   React.useEffect(() => {
     const getUser = async () => {
       try {
         const {
           data: { user },
+          error,
         } = await supabase.auth.getUser();
         if (error) throw error;
         if (user) {
@@ -34,56 +34,30 @@ export default function EventPage() {
     getUser();
   }, []);
 
-  const addBookMutation = useAddEventMutation();
-
-  const { isPending, error, data } = useQuery({
-    queryKey: ["eventData"],
-    queryFn: () =>
-      fetch(
-        "https://api.steinhq.com/v1/storages/65df42124a64236312092cf1/Event",
-      ).then((res) => res.json()),
-  });
-
-  if (isPending) return "Loading...";
-
-  if (error) return `An error has occurred: ${error.message}`;
   return (
-    <div className="grid grid-cols-5 gap-4">
-      <div className="font-robotomono flex justify-center items-center m-10 flex-col col-span-4">
-        <h1 className="my-16 text-5xl font-bold">
-          let's <span className="text-yellow-500">PartyCipate.</span> in every
-          party
-        </h1>
-
-        {user.aud === "authenticated" && (
-          <div className="container mx-auto py-10">
-            <h1 className="font-bold text-3xl text-yellow-500">
-              {user?.user_metadata?.username}'s Party
+    
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <div className="pb-24">
+            {user.aud === "authenticated" ? 
+            <p className="text-xl lg:text-4xl font-bold">Hi, {user?.user_metadata?.username} Welcome to</p> :
+            
+            <p className="text-xl lg:text-4xl font-bold">Welcome to</p>}
+            <h1 className="text-6xl lg:text-8xl text-yellow-500 pb-4 pt-2">
+              Partycipate.
             </h1>
-            <DataTableMy columns={columnsMy} data={data} />
+            <p className="text-lg lg:text-xl font-bold">
+              Let's{" "}
+              <span className="text-yellow-500 font-bold">Partycipate.</span>in
+              every party
+            </p>
           </div>
-        )}
-
-        <div className="container mx-auto py-10">
-          <h1 className="font-bold text-3xl text-yellow-500">All Party</h1>
-          <DataTable columns={columns} data={data} />
+          <div>
+            <Button variant="warning" className="w-60 h-14 text-xl" asChild>
+              <Link href={"/dashboard"}>Join Party!</Link>
+            </Button>
+          </div>
         </div>
-      </div>
-      <div className="border-l-2 border-solid border-gray-300 p-5 bg-gray-200">
-        <div className="font-bold text-2xl text-yellow-500 pb-5">
-          My Schedule
-        </div>
-        {data.map((event: any) => {
-          if (event.host === "laugh factory") {
-            return (
-              <div className="w-full h-24 flex flex-col justify-center border-t-2 border-solid border-gray-800">
-                <p className="font-bold text-lg">{event.name}</p>
-                <p>{event.time}</p>
-              </div>
-            );
-          }
-        })}
-      </div>
-    </div>
   );
-}
+};
+
+export default HomePage;

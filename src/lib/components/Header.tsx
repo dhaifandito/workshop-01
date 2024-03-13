@@ -17,36 +17,38 @@ import {
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 
-// import Try from "./Try";
-
 export default function Header() {
   const supabase = createClient();
 
+  const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+  const { toast } = useToast();
+
   type userObject = { [key: string]: any };
   const [user, setUser] = React.useState<userObject>({});
+
+  //get user via supabase
   React.useEffect(() => {
     const getUser = async () => {
       try {
         const {
-          data: { user }, error
+          data: { user },
+          error,
         } = await supabase.auth.getUser();
         if (error) throw error;
         if (user) {
           setUser(user);
         }
       } catch (error) {
-        console.log("error: ", error);
+        console.log("error: ", error, "payah");
       }
     };
 
     getUser();
   }, []);
 
-  const router = useRouter();
-  const [open, setOpen] = React.useState(false);
-  const { toast } = useToast();
-
-  const handleSubmit = async (e: any) => {
+  //handle log out via supabase
+  const handleLogOut = async (e: any) => {
     e.preventDefault();
 
     const { error } = await supabase.auth.signOut();
@@ -58,19 +60,20 @@ export default function Header() {
       toast({
         description: "You are logged out",
       });
+
       router.push("/login");
     }
   };
 
   return (
-    <div className="font-robotomono flex justify-between items-center bg-gray-800 shadow-md text-yellow-500 p-4">
+    <div className="flex justify-between items-center bg-gray-800 shadow-md text-yellow-500 w-full h-20">
       <div className="mx-10">
         <Link href="/">PartyCipate.</Link>
       </div>
-      {user.aud === "authenticated" ? 
+      { user?.aud === "authenticated" ? (
         <div className="mx-10 flex justify-end items-center">
-          <Link href="/user/Laugh%20Factory" className="px-5">
-            User
+          <Link href={`/user/${user?.user_metadata?.username}`} className="px-5">
+            {user?.user_metadata?.username}
           </Link>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -78,7 +81,7 @@ export default function Header() {
                 variant="outline"
                 className="bg-gray-800 border-yellow-500 hover:text-gray-800 hover:bg-yellow-500"
               >
-                Logout
+                Log out
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -88,7 +91,7 @@ export default function Header() {
                   Are you sure you want to logout?
                 </DialogDescription>
               </DialogHeader>
-              <Button variant="destructive" onClick={handleSubmit}>
+              <Button variant="destructive" onClick={handleLogOut}>
                 Log out
               </Button>
             </DialogContent>
@@ -96,7 +99,7 @@ export default function Header() {
 
           <Toaster />
         </div>
-     :
+      ) : (
         <div>
           <Link href="/login" className="px-5">
             Login
@@ -104,7 +107,7 @@ export default function Header() {
 
           <Toaster />
         </div>
-}
+      )}
     </div>
   );
 }

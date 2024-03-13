@@ -31,8 +31,9 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center flex-col m-12">
+    <div className="flex justify-center flex-col items-center m-12 min-h-screen">
       <Toaster />
+      <h1 className="pb-7 text-2xl">Register</h1>
       <form>
         <div>
           <p>email</p>

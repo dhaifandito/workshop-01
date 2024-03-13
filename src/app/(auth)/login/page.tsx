@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import { createClient } from "@/lib/supabase/client";
+import { useLogin } from "@/lib/context/useLogin";
 
 const formSchema = z.object({
   email: z.string().min(2).max(50),
@@ -30,6 +31,7 @@ const formSchema = z.object({
 export default function Login() {
   const { toast } = useToast();
   const router = useRouter();
+  const {isLogin, setisLogin} = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,7 +66,8 @@ export default function Login() {
     }
   };
   return (
-    <div className="font-robotomono  mx-96 my-12  ">
+   <div className="col-span-2 flex justify-center items-center flex-col min-h-screen">
+      <h1 className="text-2xl pb-7">Login</h1>
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-8">
           <FormField
@@ -75,7 +78,7 @@ export default function Login() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="shadcn"
+                    placeholder="email"
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </FormControl>
@@ -93,7 +96,7 @@ export default function Login() {
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="shadcn"
+                    placeholder="password"
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </FormControl>
@@ -105,7 +108,7 @@ export default function Login() {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
-      <Link href="/register" className="px-5">
+      <Link href="/register" className="px-5 pt-7">
         Don't have an account yet? Register now.
       </Link>
       <Toaster />
