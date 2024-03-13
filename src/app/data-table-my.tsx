@@ -69,18 +69,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  description: z.string(),
-  time: z.date(),
-  place: z.string(),
-  quota: z.number(),
-  category: z.string(),
-});
+
 
 import { Label } from "@/components/ui/label";
+import CreateEvent from "@/lib/components/CreateEvent";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -115,19 +107,6 @@ export function DataTableMy<TData, TValue>({
     table.getColumn("host")?.setFilterValue("Laugh Factory")
   }, []);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      place: "",
-      category: ""
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
 
   return (
     <div>
@@ -153,7 +132,8 @@ export function DataTableMy<TData, TValue>({
               <DialogTitle>Create Your Party</DialogTitle>
               <DialogDescription>
                 <div className="py-5">
-                  <Form {...form}>
+                  <CreateEvent />
+                  {/* <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               // control={form.control}
@@ -278,8 +258,7 @@ export function DataTableMy<TData, TValue>({
             />
             <Button variant="warning">Submit</Button>
           </form>
-        </Form>
-                  
+                  </Form> */}
                 </div>
               </DialogDescription>
             </DialogHeader>
